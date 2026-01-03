@@ -562,9 +562,11 @@ app.post('/api/predict', async (req, res) => {
       accident_probability: parseFloat(accident_probability),
       scenario_name: scenario_name || 'Manual Prediction',
       emergency_load: mlResponse.data.emergency_load,
-      icu_beds: mlResponse.data.icu_beds,
+      icu_beds_required: mlResponse.data.icu_beds,
       ventilator_demand: mlResponse.data.ventilator_demand,
-      staff_workload: mlResponse.data.staff_workload
+      staff_workload: mlResponse.data.staff_workload,
+      alert_level: mlResponse.data.alert_level,
+      recommendations: mlResponse.data.recommendations
     };
 
     const prediction = new Prediction(predictionData);
@@ -578,6 +580,21 @@ app.post('/api/predict', async (req, res) => {
     });
   } catch (error) {
     console.error('Error getting prediction:', error);
+    
+    // Check if it's an ML service connection error
+    if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
+      return res.status(503).json({ 
+        error: 'ML service is not available. Please ensure the ML service is running on port 5000.' 
+      });
+    }
+    
+    // Check if it's a response error from ML service
+    if (error.response) {
+      return res.status(error.response.status).json({ 
+        error: `ML service error: ${error.response.data.error || 'Unknown error'}` 
+      });
+    }
+    
     res.status(500).json({ error: 'Failed to get prediction from ML service' });
   }
 });
