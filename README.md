@@ -13,7 +13,10 @@ A predictive healthcare resource management system that uses AI/ML to forecast h
 
 # 3. Team Name
 
-SHCIANS
+## SHCIANS
+Team Leader : Sham Kumar K M
+Team Member 2 : Gugan R
+Team Member 3 : Yogesh Kumar K M
 
 # 4. Deployed Link
 
